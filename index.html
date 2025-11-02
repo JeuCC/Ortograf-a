@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictado de Ortografía - 368 Palabras</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .content {
+            padding: 25px;
+        }
+        .palabra-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #palabra {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+        }
+        #respuesta {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .botones {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #btnComprobar { background: #4CAF50; color: white; }
+        #btnRepetir { background: #2196F3; color: white; }
+        .resultado {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .correcto { background: #d4edda; color: #155724; }
+        .incorrecto { background: #f8d7da; color: #721c24; }
+        .contador {
+            text-align: center;
+            color: #666;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗣️ Dictado en GitHub</h1>
+            <p>368 palabras - Siempre disponible</p>
+        </div>
+        <div class="content">
+            <div class="contador" id="contador">Preparando...</div>
+            <div class="palabra-container">
+                <div id="palabra">Cargando...</div>
+            </div>
+            <input type="text" id="respuesta" placeholder="Escribe la palabra..." autocomplete="off">
+            <div class="botones">
+                <button id="btnComprobar">✅ Comprobar</button>
+                <button id="btnRepetir">🔊 Repetir</button>
+            </div>
+            <div id="resultado"></div>
+        </div>
+    </div>
+
+    <script>
+        // LISTA COMPLETA DE 368 PALABRAS
+        const palabras = [
+            "absorber", "abusivo", "acallar", "acentuación", "acepción", "acercar", "acérrimo", "acetileno", "ácido", "aconsejable",
+            "acordeón", "acotación", "acreedor", "acunar", "acústica", "adherente", "adiós", "adolescente", "adquisición", "adverbio",
+            "adyacente", "aguijón", "águila", "ahí", "ahijado", "ahorita", "ahuecar", "ahuyentar", "alcahuete", "alevosía",
+            "alfabetización", "alhaja", "almohada", "alveolo", "ambigüedad", "ámbito", "análogo", "anárquico", "antagónico", "antónimos",
+            "apellido", "aprendizaje", "árbitro", "arborescente", "ascender", "así", "asociaban", "autodisciplina", "averiguo", "aversión",
+            "avestruz", "avezado", "azafata", "azafrán", "azaroso", "azulejo", "azuzar", "babilónico", "bagazo", "bahía",
+            "balcón", "baloncesto", "beneplácito", "benévolo", "biopsia", "bostezar", "botánica", "bóveda", "brazo", "breve",
+            "bribón", "cabizbajo", "cacahuate", "calumnia", "calvicie", "caníbal", "cansancio", "caravana", "carbonización", "carey",
+            "cataclismo", "cefalalgia", "célula", "centésimo", "cerciorarse", "cesto", "chacuaco", "Chihuahua", "chihuahuense", "chispazo",
+            "chubasco", "cigüeña", "cinico", "circense", "circulante", "círculo", "cisne", "coadyuvar", "códices", "cohabitar",
+            "cohete", "cohesión", "cohibir", "colágeno", "colibrí", "colisión", "compasión", "concepto", "concernir", "concesión",
+            "concienzudo", "conclusion", "conducción", "conduzco", "congénito", "comminar", "connotar", "consciente", "cónyuge", "copear",
+            "copiar", "córnea", "cristalización", "crítico", "cuadrúpedo", "Cuauhtémoc", "cutre", "danzón", "débil", "decisión",
+            "degüello", "desahogar", "descendiente", "dieciséis", "displicente", "divisible", "endligar", "esbirro", "escéptico", "esguince",
+            "espléndida", "exhibición", "exuberante", "fehaciente", "fluorescente", "fotosíntesis", "frugal", "genuflexión", "graznido", "gutural",
+            "hallazgo", "hay", "hazaña", "herbivoro", "hipócrita", "hipoglicemia", "hirsuta", "holgazán", "honor", "horma",
+            "horóscopo", "hospicio", "hoy", "huésped", "huipil", "húngaro", "hurto", "ideología", "idiosincrasia", "ilegibles",
+            "ilógicos", "impronta", "índice", "indisciplina", "infección", "inhábil", "inhalar", "inherente", "inhibir", "inhóspito",
+            "inmóvil", "inmune", "innato", "interés", "inyección", "irreconciliable", "isócrono", "isósceles", "isótopo", "Itzcóatl",
+            "jabalina", "jabón", "jaguar", "jalisciense", "jovial", "joya", "juglares", "juguetería", "junquillo", "kilociclo",
+            "kilometraje", "kilómetro", "kilovoltios", "kiosco", "lábaro", "laborable", "lácteo", "lápiz", "lengüeta", "lengüetazo",
+            "limite", "lingüístico", "lóbulo", "lógica", "luz", "Luzbel", "macizo", "maniquí", "máquina", "marqués",
+            "Márquez", "mártir", "matemáticas", "matraz", "maya", "mayúsculas", "mazapán", "mellizo", "meningitis", "metáfora",
+            "mezclilla", "mínimo", "minucias", "minuciosidad", "miscelánea", "molécula", "monótono", "movilización", "muelle", "multiplicación",
+            "municipio", "mutación", "mutis", "nácar", "nacionalizar", "naciones", "náhuatl", "narcisismo", "nariz", "náusea",
+            "necesario", "neoclásico", "nexo", "nicaragüense", "nieve", "nostalgia", "notable", "nótese", "noticiario", "novela",
+            "obscena", "observación", "obstruir", "ocasión", "occiso", "odontólogo", "ofrecer", "ojal", "óleo", "olimpiada",
+            "onomatopeya", "oscilación", "pálido", "parabién", "parábola", "paradójico", "paráfrasis", "parásito", "paréntesis", "párpado",
+            "párrafo", "pasión", "patina", "perentorio", "perspicacia", "pifias", "pingüino", "pirámides", "plácemes", "plañidera",
+            "plebiscito", "pócima", "poética", "polémico", "póliza", "poseen", "posesivo", "precipitación", "precisamente", "prehistórico",
+            "proximidad", "psicológico", "punitivo", "quehacer", "quiché", "quimérico", "quimioterapia", "quizá", "rallador", "rasgo",
+            "raspado", "razón", "reticente", "sanguijuela", "sarampión", "sartén", "seiscientos", "sinvergüenza", "sísmico", "sobrevivir",
+            "sollozo", "sorna", "subconsciente", "súbditos", "subsidio", "sumisión", "suspensión", "superávit", "talabartero", "tálamo",
+            "tergiversar", "testaferro", "titánico", "translúcido", "transposición", "trascendental", "traviesa", "trayectoria", "trescientos", "triángulo",
+            "tromba", "vagabundo", "válvula", "vanguardia", "verosímil", "viceversa", "vicistitud", "vocativo", "vocear", "voluble",
+            "xenofobia", "yacer", "yegúita", "yeso", "yuxtaposición", "Zacatecas", "zaguán", "zahúrda", "zambullir", "zanahoria",
+            "zapatazo", "zarpazo", "zarzuela", "zigzag", "zigzaguear", "Zihuatanejo", "zoológico", "zozobra"
+        ];
+
+        let palabrasMezcladas = [];
+        let palabraActual = '';
+        let indiceActual = 0;
+        let puntuacion = 0;
+
+        function iniciarDictado() {
+            // Mezclar palabras
+            palabrasMezcladas = [...palabras];
+            mezclarArray(palabrasMezcladas);
+            
+            indiceActual = 0;
+            puntuacion = 0;
+            
+            document.getElementById('contador').textContent = `1 de ${palabras.length} palabras`;
+            siguientePalabra();
+        }
+
+        function mezclarArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function siguientePalabra() {
+            if (indiceActual >= palabrasMezcladas.length) {
+                finalizarDictado();
+                return;
+            }
+            
+            palabraActual = palabrasMezcladas[indiceActual];
+            document.getElementById('palabra').textContent = '🔊 Escuchando...';
+            document.getElementById('contador').textContent = `${indiceActual + 1} de ${palabras.length}`;
+            document.getElementById('respuesta').value = '';
+            document.getElementById('resultado').className = '';
+            document.getElementById('resultado').textContent = '';
+            
+            hablarPalabra();
+        }
+
+        function hablarPalabra() {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(palabraActual);
+                utterance.lang = 'es-ES';
+                utterance.rate = 0.8;
+                
+                utterance.onend = function() {
+                    document.getElementById('palabra').textContent = '¿Qué palabra escuchaste?';
+                };
+                
+                window.speechSynthesis.speak(utterance);
+            } else {
+                document.getElementById('palabra').textContent = palabraActual;
+            }
+        }
+
+        function comprobar() {
+            const respuesta = document.getElementById('respuesta').value.trim();
+            
+            if (!respuesta) {
+                alert('Escribe una palabra');
+                return;
+            }
+            
+            const resultado = document.getElementById('resultado');
+            const esCorrecto = respuesta.toLowerCase() === palabraActual.toLowerCase();
+            
+            if (esCorrecto) {
+                resultado.textContent = '✅ ¡Correcto!';
+                resultado.className = 'resultado correcto';
+                puntuacion++;
+            } else {
+                resultado.textContent = `❌ Era: ${palabraActual}`;
+                resultado.className = 'resultado incorrecto';
+            }
+            
+            indiceActual++;
+            setTimeout(siguientePalabra, 1500);
+        }
+
+        function finalizarDictado() {
+            const porcentaje = (puntuacion / palabras.length * 100).toFixed(1);
+            document.getElementById('palabra').textContent = `🎉 ¡Completado! ${puntuacion}/${palabras.length} (${porcentaje}%)`;
+            document.getElementById('respuesta').style.display = 'none';
+            document.querySelector('.botones').style.display = 'none';
+            
+            // Opción para reiniciar
+            setTimeout(() => {
+                if (confirm(`¿Quieres repetir el dictado?\nPuntuación: ${puntuacion}/${palabras.length} (${porcentaje}%)`)) {
+                    reiniciar();
+                }
+            }, 2000);
+        }
+
+        function reiniciar() {
+            document.getElementById('respuesta').style.display = 'block';
+            document.querySelector('.botones').style.display = 'grid';
+            iniciarDictado();
+        }
+
+        // Event listeners
+        document.getElementById('btnComprobar').addEventListener('click', comprobar);
+        document.getElementById('btnRepetir').addEventListener('click', hablarPalabra);
+        document.getElementById('respuesta').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') comprobar();
+        });
+
+        // Iniciar
+        document.addEventListener('DOMContentLoaded', iniciarDictado);
+    </script>
+</body>
+</html>
